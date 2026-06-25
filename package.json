@@ -1,0 +1,9 @@
+{
+  "name": "ethpay-nostr-store",
+  "version": "1.0.0",
+  "description": "NostrPay Store — Lightning + ETH payments on Nostr",
+  "dependencies": {
+    "@getalby/sdk": "^3.0.0",
+    "nostr-tools": "^2.7.0"
+  }
+}

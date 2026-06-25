@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NostrPay Store — Pay with ⚡ Sats or ⟠ ETH</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0d0014;
+    --purple-dark: #1a0030;
+    --purple-mid: #6b21a8;
+    --purple-bright: #a855f7;
+    --purple-glow: #d8b4fe;
+    --btc-orange: #f7931a;
+    --btc-amber: #fbbf24;
+    --eth-violet: #8b5cf6;
+    --white: #ffffff;
+    --gray: #94a3b8;
+    --card: rgba(26, 0, 48, 0.7);
+    --border: rgba(168, 85, 247, 0.2);
+    --border-hot: rgba(168, 85, 247, 0.5);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 15% 10%, rgba(107,33,168,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 80%, rgba(247,147,26,0.1) 0%, transparent 50%);
+  }
+
+  .grid-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(168,85,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(168,85,247,0.03) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .wrap { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13,0,20,0.9);
+    backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 1.2rem; font-weight: 700; letter-spacing: -0.5px;
+  }
+
+  .logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--purple-mid), var(--eth-violet));
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    box-shadow: 0 0 18px rgba(168,85,247,0.5);
+  }
+
+  .logo .n { color: var(--purple-glow); }
+  .logo .p { color: var(--white); }
+
+  .nav-pills { display: flex; gap: 8px; align-items: center; }
+
+  .pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; padding: 4px 10px; border-radius: 20px;
+    border: 1px solid; display: flex; align-items: center; gap: 5px;
+  }
+  .pill-btc { color: var(--btc-orange); border-color: rgba(247,147,26,0.3); background: rgba(247,147,26,0.07); }
+  .pill-eth { color: var(--purple-glow); border-color: var(--border); background: rgba(168,85,247,0.07); }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; animation: blink 2s infinite; }
+  .dot-btc { background: var(--btc-orange); }
+  .dot-eth { background: var(--purple-bright); }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .npub-tag {
+    font-family: 'Space Mono', monospace; font-size: 0.6rem;
+    color: var(--gray); background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 5px 10px; border-radius: 6px;
+  }
+
+  /* HERO */
+  .hero { text-align: center; padding: 56px 24px 32px; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(168,85,247,0.08);
+    border: 1px solid var(--border);
+    padding: 6px 16px; border-radius: 20px;
+    font-size: 0.75rem; color: var(--purple-glow);
+    margin-bottom: 24px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .hero-badge .sep { color: rgba(168,85,247,0.4); }
+
+  h1 {
+    font-size: clamp(1.9rem, 5vw, 3rem);
+    font-weight: 700; line-height: 1.15;
+    margin-bottom: 14px; letter-spacing: -1px;
+  }
+
+  .grad-purple {
+    background: linear-gradient(135deg, var(--purple-bright), var(--purple-glow));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .grad-btc {
+    background: linear-gradient(135deg, var(--btc-orange), var(--btc-amber));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .hero p {
+    color: var(--gray); font-size: 0.95rem;
+    max-width: 460px; margin: 0 auto 0; line-height: 1.65;
+  }
+
+  /* PAYMENT TOGGLE */
+  .pay-toggle {
+    display: flex; justify-content: center; gap: 12px;
+    padding: 28px 24px 0;
+  }
+
+  .toggle-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 22px; border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--gray);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+
+  .toggle-btn.active-btc {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+    background: rgba(247,147,26,0.1);
+    box-shadow: 0 0 20px rgba(247,147,26,0.2);
+  }
+
+  .toggle-btn.active-eth {
+    border-color: var(--purple-bright);
+    color: var(--purple-glow);
+    background: rgba(168,85,247,0.1);
+    box-shadow: 0 0 20px rgba(168,85,247,0.2);
+  }
+
+  /* STATS */
+  .stats {
+    display: flex; justify-content: center; gap: 36px;
+    padding: 24px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    margin: 24px 0 0;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.3rem; font-weight: 700;
+    color: var(--purple-glow);
+  }
+  .stat-num.orange { color: var(--btc-amber); }
+  .stat-label { font-size: 0.68rem; color: var(--gray); margin-top: 2px; }
+
+  /* PRODUCTS */
+  .section-head { text-align: center; padding: 44px 24px 8px; }
+  .section-eye {
+    font-family: 'Space Mono', monospace; font-size: 0.65rem;
+    color: var(--purple-bright); letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+    gap: 18px; max-width: 980px;
+    margin: 32px auto 0; padding: 0 20px 64px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    transition: all 0.22s;
+    backdrop-filter: blur(10px);
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-hot);
+    box-shadow: 0 12px 36px rgba(107,33,168,0.25);
+  }
+
+  .card-img {
+    height: 148px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 52px; position: relative;
+  }
+  .card-img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 40%, var(--card) 100%);
+  }
+
+  .c1 { background: linear-gradient(135deg,#1a0030,#0d0014); }
+  .c2 { background: linear-gradient(135deg,#0f0a00,#1a0030); }
+  .c3 { background: linear-gradient(135deg,#0a0020,#150025); }
+  .c4 { background: linear-gradient(135deg,#1a0030,#200040); }
+  .c5 { background: linear-gradient(135deg,#080010,#1a0030); }
+  .c6 { background: linear-gradient(135deg,#100018,#1a0030); }
+
+  .card-body { padding: 18px 20px 20px; }
+  .card-body h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 5px; }
+  .card-body p { font-size: 0.78rem; color: var(--gray); line-height: 1.5; margin-bottom: 16px; }
+
+  .card-foot { display: flex; align-items: center; justify-content: space-between; }
+
+  .price-block { display: flex; flex-direction: column; gap: 2px; }
+
+  .price-sats {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem; font-weight: 700;
+    color: var(--btc-amber);
+  }
+  .price-eth {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem; color: var(--purple-glow);
+  }
+  .price-usd { font-size: 0.65rem; color: var(--gray); }
+
+  .buy-btn {
+    border: none; color: white;
+    padding: 9px 16px; border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 0.8rem;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .btn-btc {
+    background: linear-gradient(135deg, #b45309, var(--btc-orange));
+    box-shadow: 0 2px 12px rgba(247,147,26,0.3);
+  }
+  .btn-btc:hover { box-shadow: 0 4px 20px rgba(247,147,26,0.5); transform: translateY(-1px); }
+
+  .btn-eth {
+    background: linear-gradient(135deg, var(--purple-mid), var(--eth-violet));
+    box-shadow: 0 2px 12px rgba(107,33,168,0.3);
+  }
+  .btn-eth:hover { box-shadow: 0 4px 20px rgba(168,85,247,0.5); transform: translateY(-1px); }
+
+  /* MODAL */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(5,0,12,0.88);
+    backdrop-filter: blur(10px);
+    z-index: 200; align-items: center; justify-content: center; padding: 20px;
+  }
+  .overlay.on { display: flex; }
+
+  .modal {
+    background: #130022;
+    border: 1px solid rgba(168,85,247,0.35);
+    border-radius: 20px; width: 100%; max-width: 400px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(107,33,168,0.4);
+    animation: popIn 0.22s ease;
+  }
+  @keyframes popIn {
+    from { opacity:0; transform:scale(0.93) translateY(12px); }
+    to { opacity:1; transform:scale(1) translateY(0); }
+  }
+
+  /* TAB SWITCHER */
+  .modal-tabs {
+    display: grid; grid-template-columns: 1fr 1fr;
+  }
+
+  .tab {
+    padding: 16px; text-align: center;
+    font-weight: 700; font-size: 0.9rem;
+    cursor: pointer; transition: all 0.2s;
+    border: none; background: transparent; color: var(--gray);
+    border-bottom: 2px solid transparent;
+  }
+  .tab.tab-btc.on {
+    color: var(--btc-orange);
+    border-bottom-color: var(--btc-orange);
+    background: rgba(247,147,26,0.06);
+  }
+  .tab.tab-eth.on {
+    color: var(--purple-glow);
+    border-bottom-color: var(--purple-bright);
+    background: rgba(168,85,247,0.06);
+  }
+
+  .close-x {
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(255,255,255,0.08); border: none;
+    color: white; width: 28px; height: 28px; border-radius: 6px;
+    cursor: pointer; font-size: 14px;
+  }
+
+  .modal-head-wrap { position: relative; }
+
+  .modal-body { padding: 24px 22px; }
+
+  .pay-item {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px; padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .pay-item .ico { font-size: 34px; }
+  .pay-item h4 { font-size: 0.92rem; font-weight: 600; }
+  .pay-item span { font-size: 0.75rem; color: var(--gray); }
+
+  /* LN PANEL */
+  .ln-panel { display: none; }
+  .ln-panel.on { display: block; }
+
+  .ln-address-box {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(247,147,26,0.25);
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 14px;
+  }
+  .ln-address-box label {
+    font-family: 'Space Mono', monospace; font-size: 0.62rem;
+    color: var(--btc-amber); text-transform: uppercase; letter-spacing: 1px;
+    display: block; margin-bottom: 6px;
+  }
+  .ln-address-box .addr {
+    font-family: 'Space Mono', monospace; font-size: 0.82rem;
+    color: var(--white);
+  }
+
+  /* ETH PANEL */
+  .eth-panel { display: none; }
+  .eth-panel.on { display: block; }
+
+  .eth-address-box {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 14px;
+  }
+  .eth-address-box label {
+    font-family: 'Space Mono', monospace; font-size: 0.62rem;
+    color: var(--purple-glow); text-transform: uppercase; letter-spacing: 1px;
+    display: block; margin-bottom: 6px;
+  }
+  .eth-address-box .addr {
+    font-family: 'Space Mono', monospace; font-size: 0.72rem;
+    color: var(--white); word-break: break-all; line-height: 1.5;
+  }
+
+  .amount-row {
+    display: flex; justify-content: space-between; align-items: center;
+    border-radius: 10px; padding: 13px 16px; margin-bottom: 16px;
+  }
+  .amount-row.btc-row { background: rgba(247,147,26,0.08); border: 1px solid rgba(247,147,26,0.2); }
+  .amount-row.eth-row { background: rgba(168,85,247,0.08); border: 1px solid var(--border); }
+  .amount-row .lbl { font-size: 0.78rem; color: var(--gray); }
+  .amount-row .amt {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem; font-weight: 700;
+  }
+  .amt-btc { color: var(--btc-amber); }
+  .amt-eth { color: var(--purple-glow); }
+
+  .relay-note {
+    font-family: 'Space Mono', monospace; font-size: 0.65rem;
+    color: var(--gray); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .pay-action {
+    width: 100%; border: none; color: white;
+    padding: 14px; border-radius: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 0.95rem;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .pay-action.btc-action {
+    background: linear-gradient(135deg, #b45309, var(--btc-orange));
+    box-shadow: 0 4px 20px rgba(247,147,26,0.35);
+  }
+  .pay-action.btc-action:hover { box-shadow: 0 4px 28px rgba(247,147,26,0.5); }
+  .pay-action.eth-action {
+    background: linear-gradient(135deg, var(--purple-mid), var(--eth-violet));
+    box-shadow: 0 4px 20px rgba(107,33,168,0.4);
+  }
+  .pay-action.eth-action:hover { box-shadow: 0 4px 28px rgba(168,85,247,0.5); }
+
+  .pay-action:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* SUCCESS */
+  .success { display: none; text-align: center; padding: 36px 24px; }
+  .success.on { display: block; }
+  .s-icon {
+    width: 62px; height: 62px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin: 0 auto 16px;
+  }
+  .s-btc { background: linear-gradient(135deg, #b45309, var(--btc-orange)); box-shadow: 0 0 28px rgba(247,147,26,0.4); }
+  .s-eth { background: linear-gradient(135deg, var(--purple-mid), var(--eth-violet)); box-shadow: 0 0 28px rgba(168,85,247,0.4); }
+  .success h3 { font-size: 1.15rem; margin-bottom: 8px; }
+  .success p { color: var(--gray); font-size: 0.82rem; line-height: 1.6; }
+  .tx-box {
+    font-family: 'Space Mono', monospace; font-size: 0.6rem;
+    background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px; margin: 14px 0;
+    color: var(--purple-glow); word-break: break-all;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px; text-align: center;
+    color: var(--gray); font-size: 0.75rem;
+  }
+  footer .fl { font-weight: 700; color: var(--purple-glow); font-size: 0.95rem; margin-bottom: 6px; }
+  footer a { color: var(--purple-bright); text-decoration: none; }
+
+  @media(max-width:580px) {
+    nav { padding: 12px 16px; }
+    .npub-tag { display: none; }
+    .nav-pills .pill-eth { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="wrap">
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <span class="n">Nostr</span><span class="p">Pay</span>
+  </div>
+  <div class="nav-pills">
+    <div class="pill pill-btc"><span class="dot dot-btc"></span>Lightning</div>
+    <div class="pill pill-eth"><span class="dot dot-eth"></span>ETH</div>
+  </div>
+  <div class="npub-tag">npub1zaal…8zufw0</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    ⚡ Sats <span class="sep">|</span> ⟠ ETH <span class="sep">·</span> Nostr Native
+  </div>
+  <h1>Pay with <span class="grad-btc">Sats</span><br>or <span class="grad-purple">Ethereum</span></h1>
+  <p>A decentralized store on Nostr. Pay with Lightning for the maxis, or ETH for the Web3 crowd. No KYC. No middlemen.</p>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num orange">⚡ 1,247</div>
+    <div class="stat-label">Sats Payments</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">⟠ 83</div>
+    <div class="stat-label">ETH Payments</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">12</div>
+    <div class="stat-label">Nostr Relays</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num orange">0%</div>
+    <div class="stat-label">Platform Fee</div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="section-head">
+  <div class="section-eye">// digital goods</div>
+  <h2>Pick your item, choose your currency</h2>
+</div>
+
+<div class="products">
+
+  <div class="card">
+    <div class="card-img c1">🔐</div>
+    <div class="card-body">
+      <h3>Nostr Key Bundle</h3>
+      <p>Vanity npub generation + encrypted backup. Your Nostr identity, secured.</p>
+      <div class="card-foot">
+        <div class="price-block">
+          <span class="price-sats">⚡ 25,000 sats</span>
+          <span class="price-eth">⟠ 0.008 ETH</span>
+          <span class="price-usd">≈ $24 USD</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="buy-btn btn-btc" onclick="openModal('Nostr Key Bundle','🔐','25,000','0.008','btc')">⚡</button>
+          <button class="buy-btn btn-eth" onclick="openModal('Nostr Key Bundle','🔐','25,000','0.008','eth')">⟠</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-img c2">📡</div>
+    <div class="card-body">
+      <h3>Relay Access Pass</h3>
+      <p>1-year premium relay. Low latency, 99.9% uptime, global edge nodes.</p>
+      <div class="card-foot">
+        <div class="price-block">
+          <span class="price-sats">⚡ 80,000 sats</span>
+          <span class="price-eth">⟠ 0.025 ETH</span>
+          <span class="price-usd">≈ $75 USD</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="buy-btn btn-btc" onclick="openModal('Relay Access Pass','📡','80,000','0.025','btc')">⚡</button>
+          <button class="buy-btn btn-eth" onclick="openModal('Relay Access Pass','📡','80,000','0.025','eth')">⟠</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-img c3">🤖</div>
+    <div class="card-body">
+      <h3>AI Nostr Bot License</h3>
+      <p>Deploy your own AI bot on Nostr. Auto-DMs, zaps, and smart replies.</p>
+      <div class="card-foot">
+        <div class="price-block">
+          <span class="price-sats">⚡ 250,000 sats</span>
+          <span class="price-eth">⟠ 0.08 ETH</span>
+          <span class="price-usd">≈ $240 USD</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="buy-btn btn-btc" onclick="openModal('AI Nostr Bot License','🤖','250,000','0.08','btc')">⚡</button>
+          <button class="buy-btn btn-eth" onclick="openModal('AI Nostr Bot License','🤖','250,000','0.08','eth')">⟠</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-img c4">🗺️</div>
+    <div class="card-body">
+      <h3>Infra Map Pro</h3>
+      <p>Interactive global infrastructure map — 5G, power grids, internet coverage.</p>
+      <div class="card-foot">
+        <div class="price-block">
+          <span class="price-sats">⚡ 50,000 sats</span>
+          <span class="price-eth">⟠ 0.016 ETH</span>
+          <span class="price-usd">≈ $48 USD</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="buy-btn btn-btc" onclick="openModal('Infra Map Pro','🗺️','50,000','0.016','btc')">⚡</button>
+          <button class="buy-btn btn-eth" onclick="openModal('Infra Map Pro','🗺️','50,000','0.016','eth')">⟠</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-img c5">✅</div>
+    <div class="card-body">
+      <h3>NIP-05 Verified ID</h3>
+      <p>Get your nostr@domain NIP-05 identifier. Lifetime verified badge.</p>
+      <div class="card-foot">
+        <div class="price-block">
+          <span class="price-sats">⚡ 10,000 sats</span>
+          <span class="price-eth">⟠ 0.003 ETH</span>
+          <span class="price-usd">≈ $9 USD</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="buy-btn btn-btc" onclick="openModal('NIP-05 Verified ID','✅','10,000','0.003','btc')">⚡</button>
+          <button class="buy-btn btn-eth" onclick="openModal('NIP-05 Verified ID','✅','10,000','0.003','eth')">⟠</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-img c6">🏪</div>
+    <div class="card-body">
+      <h3>Store Builder Kit</h3>
+      <p>Full NostrPay storefront template. Deploy your own dual-payment shop.</p>
+      <div class="card-foot">
+        <div class="price-block">
+          <span class="price-sats">⚡ 500,000 sats</span>
+          <span class="price-eth">⟠ 0.16 ETH</span>
+          <span class="price-usd">≈ $480 USD</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="buy-btn btn-btc" onclick="openModal('Store Builder Kit','🏪','500,000','0.16','btc')">⚡</button>
+          <button class="buy-btn btn-eth" onclick="openModal('Store Builder Kit','🏪','500,000','0.16','eth')">⟠</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fl">⚡ NostrPay Store</div>
+  <p>Lightning via <a href="lightning:erna@getalby.com">erna@getalby.com</a> · ETH: <a href="#">0x1E7c…673BF</a></p>
+  <p style="margin-top:6px;">Built by <a href="https://njump.me/npub1zaal69jq3qaulph9q2yy8mcxjz2wwh52zthdz4543h0kkdr6qljq8zufw0">#nostrindo</a> · No KYC · No Custodians · Nostr Native</p>
+</footer>
+
+</div><!-- /wrap -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="outsideClose(event)">
+  <div class="modal" id="modal">
+
+    <div class="modal-head-wrap">
+      <div class="modal-tabs">
+        <button class="tab tab-btc on" id="tabBtc" onclick="switchTab('btc')">⚡ Pay with Sats</button>
+        <button class="tab tab-eth" id="tabEth" onclick="switchTab('eth')">⟠ Pay with ETH</button>
+      </div>
+      <button class="close-x" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- Payment panels -->
+    <div class="modal-body" id="payBody">
+
+      <div class="pay-item">
+        <div class="ico" id="mIcon">🔐</div>
+        <div>
+          <h4 id="mName">Nostr Key Bundle</h4>
+          <span>Delivered via Nostr DM after confirmation</span>
+        </div>
+      </div>
+
+      <!-- LN PANEL -->
+      <div class="ln-panel on" id="lnPanel">
+        <div class="ln-address-box">
+          <label>⚡ Lightning Address</label>
+          <div class="addr">erna@getalby.com</div>
+        </div>
+        <div class="amount-row btc-row">
+          <span class="lbl">Amount</span>
+          <span class="amt amt-btc" id="mSats">25,000 sats</span>
+        </div>
+        <div class="relay-note">⚡ Payment event broadcast to 12 Nostr relays</div>
+
+        <div id="lnInvoiceBox" style="display:none;margin-bottom:14px;">
+          <div class="ln-address-box" style="border-color:rgba(247,147,26,0.4);">
+            <label>⚡ Lightning Invoice — copy to your wallet</label>
+            <div id="lnInvoiceText" style="font-family:'Space Mono',monospace;font-size:0.6rem;word-break:break-all;line-height:1.5;color:#fbbf24;cursor:pointer;" onclick="copyInvoice()">-</div>
+          </div>
+          <p style="font-size:0.68rem;color:var(--gray);margin-bottom:10px;">Tap invoice to copy · Waiting for confirmation...</p>
+        </div>
+
+        <button class="pay-action btc-action" id="lnBtn" onclick="simulatePay('btc')">
+          ⚡ Send Sats via Lightning
+        </button>
+      </div>
+
+      <!-- ETH PANEL -->
+      <div class="eth-panel" id="ethPanel">
+        <div class="eth-address-box">
+          <label>⟠ ETH Wallet Address</label>
+          <div class="addr">0x1E7c6338431d1C6326053F9355eb1812A8b673BF</div>
+        </div>
+        <div class="amount-row eth-row">
+          <span class="lbl">Amount</span>
+          <span class="amt amt-eth" id="mEth">0.008 ETH</span>
+        </div>
+        <div class="relay-note">⚡ Payment event broadcast to 12 Nostr relays</div>
+        <button class="pay-action eth-action" id="ethBtn" onclick="simulatePay('eth')">
+          ⟠ Connect Wallet & Pay
+        </button>
+      </div>
+
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success" id="successDiv">
+      <div class="s-icon" id="sIcon">✓</div>
+      <h3>Payment Confirmed!</h3>
+      <p>Nostr event signed and broadcast.<br>Check your DMs for delivery.</p>
+      <div class="tx-box" id="txBox"></div>
+      <p style="font-size:0.72rem;color:var(--purple-glow);">⚡ Published to 12 Nostr relays</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const LN = 'erna@getalby.com';
+  const ETH_ADDR = '0x1E7c6338431d1C6326053F9355eb1812A8b673BF';
+  let currentTab = 'btc';
+
+  function openModal(name, icon, sats, eth, tab) {
+    document.getElementById('mName').textContent = name;
+    document.getElementById('mIcon').textContent = icon;
+    document.getElementById('mSats').textContent = sats + ' sats';
+    document.getElementById('mEth').textContent = eth + ' ETH';
+    document.getElementById('payBody').style.display = 'block';
+    document.getElementById('successDiv').classList.remove('on');
+    resetBtns();
+    switchTab(tab);
+    document.getElementById('overlay').classList.add('on');
+  }
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tabBtc').className = 'tab tab-btc' + (tab==='btc'?' on':'');
+    document.getElementById('tabEth').className = 'tab tab-eth' + (tab==='eth'?' on':'');
+    document.getElementById('lnPanel').className = 'ln-panel' + (tab==='btc'?' on':'');
+    document.getElementById('ethPanel').className = 'eth-panel' + (tab==='eth'?' on':'');
+  }
+
+  function closeModal() {
+    document.getElementById('overlay').classList.remove('on');
+  }
+
+  function outsideClose(e) {
+    if (e.target === document.getElementById('overlay')) closeModal();
+  }
+
+  function resetBtns() {
+    const lb = document.getElementById('lnBtn');
+    const eb = document.getElementById('ethBtn');
+    lb.textContent = '⚡ Send Sats via Lightning';
+    eb.textContent = '⟠ Connect Wallet & Pay';
+    lb.disabled = false; eb.disabled = false;
+  }
+
+  function copyInvoice() {
+    const text = document.getElementById('lnInvoiceText').textContent;
+    navigator.clipboard.writeText(text).then(() => alert('Invoice copied!'));
+  }
+
+  // --- REAL PAYMENT FLOW ---
+
+  let currentInvoice = null; // store invoice data for polling
+
+  async function simulatePay(type) {
+    if (type === 'eth') {
+      payWithEth();
+      return;
+    }
+    await payWithLightning();
+  }
+
+  async function payWithLightning() {
+    const btn = document.getElementById('lnBtn');
+    btn.textContent = '⚡ Generating Invoice...';
+    btn.disabled = true;
+
+    const product = document.getElementById('mName').textContent;
+    const satsText = document.getElementById('mSats').textContent; // e.g. "25,000 sats"
+    const amount = parseInt(satsText.replace(/,/g, '').replace(' sats', ''));
+
+    try {
+      // 1. Create real invoice
+      const res = await fetch('/.netlify/functions/create-invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, product, buyerPubkey: '' })
+      });
+
+      const data = await res.json();
+
+      if (!data.invoice) throw new Error(data.error || 'Failed to create invoice');
+
+      currentInvoice = data;
+
+      // 2. Show QR / invoice to user
+      btn.textContent = '⚡ Waiting for payment...';
+      document.getElementById('lnInvoiceBox').style.display = 'block';
+      document.getElementById('lnInvoiceText').textContent = data.invoice;
+
+      // 3. Poll for payment
+      pollPayment(data.paymentHash, product, amount);
+
+    } catch (err) {
+      btn.textContent = '⚡ Send Sats via Lightning';
+      btn.disabled = false;
+      alert('Error: ' + err.message);
+    }
+  }
+
+  async function pollPayment(paymentHash, product, amount) {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch('/.netlify/functions/check-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentHash })
+        });
+        const data = await res.json();
+
+        if (data.paid) {
+          clearInterval(interval);
+
+          // Send Nostr DM confirmation
+          await fetch('/.netlify/functions/send-dm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ buyerPubkey: '', product, amount, paymentHash })
+          });
+
+          // Show success
+          document.getElementById('payBody').style.display = 'none';
+          document.getElementById('lnInvoiceBox').style.display = 'none';
+          const sIcon = document.getElementById('sIcon');
+          sIcon.className = 's-icon s-btc';
+          sIcon.textContent = '✓';
+          document.getElementById('txBox').textContent = 'Payment Hash: ' + paymentHash;
+          document.getElementById('successDiv').classList.add('on');
+        }
+      } catch (e) {
+        console.error('Poll error:', e);
+      }
+    }, 3000); // check every 3 seconds
+  }
+
+  function payWithEth() {
+    const btn = document.getElementById('ethBtn');
+    btn.textContent = '⟠ Connecting wallet...';
+    btn.disabled = true;
+
+    // Check for MetaMask / window.ethereum
+    if (typeof window.ethereum === 'undefined') {
+      btn.textContent = '⟠ Connect Wallet & Pay';
+      btn.disabled = false;
+      alert('No ETH wallet found. Please install MetaMask or use a Web3 browser.');
+      return;
+    }
+
+    const ethAmount = document.getElementById('mEth').textContent.replace(' ETH','');
+    const product = document.getElementById('mName').textContent;
+    const ETH_ADDRESS = '0x1E7c6338431d1C6326053F9355eb1812A8b673BF';
+
+    window.ethereum.request({ method: 'eth_requestAccounts' })
+      .then(accounts => {
+        const from = accounts[0];
+        const value = '0x' + Math.floor(parseFloat(ethAmount) * 1e18).toString(16);
+
+        return window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{ from, to: ETH_ADDRESS, value }]
+        });
+      })
+      .then(txHash => {
+        document.getElementById('payBody').style.display = 'none';
+        const sIcon = document.getElementById('sIcon');
+        sIcon.className = 's-icon s-eth';
+        sIcon.textContent = '✓';
+        document.getElementById('txBox').textContent = 'TX: ' + txHash;
+        document.getElementById('successDiv').classList.add('on');
+      })
+      .catch(err => {
+        btn.textContent = '⟠ Connect Wallet & Pay';
+        btn.disabled = false;
+        alert('Wallet error: ' + err.message);
+      });
+  }
+</script>
+</body>
+</html>
