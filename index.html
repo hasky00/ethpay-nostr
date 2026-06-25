@@ -426,6 +426,100 @@
     color: var(--purple-glow); word-break: break-all;
   }
 
+  /* LN INVOICE */
+  #lnInvoiceArea { margin-top: 16px; }
+  .qr-wrap {
+    background: #fff; padding: 18px; border-radius: 12px;
+    width: max-content; margin: 0 auto 14px;
+    box-shadow: 0 0 24px rgba(247,147,26,0.25);
+  }
+  .qr-wrap img, .qr-wrap canvas { display: block; }
+  .inv-string {
+    font-family: 'Space Mono', monospace; font-size: 0.6rem;
+    background: rgba(0,0,0,0.35); border: 1px solid rgba(247,147,26,0.25);
+    border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;
+    color: var(--btc-amber); word-break: break-all; line-height: 1.5;
+    max-height: 70px; overflow-y: auto; cursor: pointer;
+  }
+  .inv-actions { display: flex; gap: 8px; margin-bottom: 14px; }
+  .inv-btn {
+    flex: 1; text-align: center; text-decoration: none;
+    border: 1px solid rgba(247,147,26,0.3); background: rgba(247,147,26,0.08);
+    color: var(--btc-amber); padding: 10px; border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.78rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .inv-btn:hover { background: rgba(247,147,26,0.18); }
+  .ln-status {
+    font-family: 'Space Mono', monospace; font-size: 0.72rem;
+    text-align: center; color: var(--gray);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .ln-status.paid { color: var(--btc-amber); }
+  .ln-spinner {
+    width: 12px; height: 12px; border: 2px solid rgba(247,147,26,0.3);
+    border-top-color: var(--btc-orange); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ln-error {
+    font-family: 'Space Mono', monospace; font-size: 0.72rem;
+    color: #fca5a5; background: rgba(220,38,38,0.1);
+    border: 1px solid rgba(220,38,38,0.3); border-radius: 8px;
+    padding: 10px 12px; margin-top: 12px; line-height: 1.5;
+  }
+
+  /* ETH STATUS */
+  #ethStatusArea { margin-top: 16px; }
+  #ethStatusArea .ln-spinner {
+    border-color: rgba(168,85,247,0.3); border-top-color: var(--purple-bright);
+  }
+  #ethStatusArea .ln-status.paid { color: var(--purple-glow); }
+  .eth-inv-btn {
+    display: inline-block; text-decoration: none; width: 100%; text-align: center;
+    border: 1px solid var(--border); background: rgba(168,85,247,0.08);
+    color: var(--purple-glow); padding: 10px; border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.78rem;
+    margin-bottom: 12px; transition: all 0.2s;
+  }
+  .eth-inv-btn:hover { background: rgba(168,85,247,0.18); }
+
+  /* DELIVERY */
+  #deliveryArea { margin-top: 14px; }
+  .deliver-box {
+    background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px; text-align: left; margin-top: 6px;
+  }
+  .deliver-label {
+    font-family: 'Space Mono', monospace; font-size: 0.7rem;
+    color: var(--purple-glow); margin-bottom: 12px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .kv { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
+  .kv > span {
+    font-size: 0.6rem; color: var(--gray);
+    font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .kv code {
+    font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--white);
+    word-break: break-all; background: rgba(255,255,255,0.04);
+    padding: 7px 9px; border-radius: 6px;
+  }
+  .kv code.secret { color: var(--btc-amber); border: 1px solid rgba(247,147,26,0.3); background: rgba(247,147,26,0.06); }
+  .deliver-warn {
+    font-family: 'Space Mono', monospace; font-size: 0.62rem;
+    color: #fca5a5; line-height: 1.5; margin-top: 6px;
+  }
+  .deliver-note { font-size: 0.72rem; color: var(--gray); line-height: 1.55; margin-top: 4px; }
+  .deliver-dl {
+    width: 100%; border: none; color: white; margin-top: 14px;
+    padding: 12px; border-radius: 10px; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.88rem;
+    background: linear-gradient(135deg, var(--purple-mid), var(--eth-violet));
+    box-shadow: 0 4px 18px rgba(107,33,168,0.35); transition: all 0.2s;
+  }
+  .deliver-dl:hover { box-shadow: 0 4px 26px rgba(168,85,247,0.5); }
+
   /* FOOTER */
   footer {
     border-top: 1px solid var(--border);
@@ -654,19 +748,11 @@
           <span class="lbl">Amount</span>
           <span class="amt amt-btc" id="mSats">25,000 sats</span>
         </div>
-        <div class="relay-note">⚡ Payment event broadcast to 12 Nostr relays</div>
-
-        <div id="lnInvoiceBox" style="display:none;margin-bottom:14px;">
-          <div class="ln-address-box" style="border-color:rgba(247,147,26,0.4);">
-            <label>⚡ Lightning Invoice — copy to your wallet</label>
-            <div id="lnInvoiceText" style="font-family:'Space Mono',monospace;font-size:0.6rem;word-break:break-all;line-height:1.5;color:#fbbf24;cursor:pointer;" onclick="copyInvoice()">-</div>
-          </div>
-          <p style="font-size:0.68rem;color:var(--gray);margin-bottom:10px;">Tap invoice to copy · Waiting for confirmation...</p>
-        </div>
-
-        <button class="pay-action btc-action" id="lnBtn" onclick="simulatePay('btc')">
-          ⚡ Send Sats via Lightning
+        <div class="relay-note">⚡ Real Lightning invoice via LNURL-pay</div>
+        <button class="pay-action btc-action" id="lnBtn" onclick="payWithLightning()">
+          ⚡ Generate Lightning Invoice
         </button>
+        <div id="lnInvoiceArea"></div>
       </div>
 
       <!-- ETH PANEL -->
@@ -679,10 +765,11 @@
           <span class="lbl">Amount</span>
           <span class="amt amt-eth" id="mEth">0.008 ETH</span>
         </div>
-        <div class="relay-note">⚡ Payment event broadcast to 12 Nostr relays</div>
-        <button class="pay-action eth-action" id="ethBtn" onclick="simulatePay('eth')">
+        <div class="relay-note" id="ethNetNote">⟠ Real on-chain payment via your wallet</div>
+        <button class="pay-action eth-action" id="ethBtn" onclick="payWithEth()">
           ⟠ Connect Wallet & Pay
         </button>
+        <div id="ethStatusArea"></div>
       </div>
 
     </div>
@@ -691,24 +778,39 @@
     <div class="success" id="successDiv">
       <div class="s-icon" id="sIcon">✓</div>
       <h3>Payment Confirmed!</h3>
-      <p>Nostr event signed and broadcast.<br>Check your DMs for delivery.</p>
+      <p id="successSub">Your order is ready below — save it now.</p>
       <div class="tx-box" id="txBox"></div>
-      <p style="font-size:0.72rem;color:var(--purple-glow);">⚡ Published to 12 Nostr relays</p>
+      <div id="deliveryArea"></div>
     </div>
 
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
   const LN = 'erna@getalby.com';
   const ETH_ADDR = '0x1E7c6338431d1C6326053F9355eb1812A8b673BF';
+  const REQUIRED_CHAIN = '0xaa36a7';     // Active network — change to '0x1' (Ethereum), '0x2105' (Base), '0xaa36a7' (Sepolia)
+  const REQUIRED_NAME = 'Sepolia testnet';
   let currentTab = 'btc';
+  let currentSats = 0;
+  let currentEth = '0';
+  let currentName = '';
+  let currentIcon = '';
+  let currentInvoice = '';
+  let lnPollTimer = null;
+  let ethPollTimer = null;
+  let ethTxHash = '';
 
   function openModal(name, icon, sats, eth, tab) {
+    currentName = name;
+    currentIcon = icon;
     document.getElementById('mName').textContent = name;
     document.getElementById('mIcon').textContent = icon;
     document.getElementById('mSats').textContent = sats + ' sats';
     document.getElementById('mEth').textContent = eth + ' ETH';
+    currentSats = parseInt(String(sats).replace(/[^0-9]/g, ''), 10) || 0;
+    currentEth = String(eth).replace(/[^0-9.]/g, '') || '0';
     document.getElementById('payBody').style.display = 'block';
     document.getElementById('successDiv').classList.remove('on');
     resetBtns();
@@ -725,6 +827,7 @@
   }
 
   function closeModal() {
+    stopPolling();
     document.getElementById('overlay').classList.remove('on');
   }
 
@@ -732,145 +835,463 @@
     if (e.target === document.getElementById('overlay')) closeModal();
   }
 
+  function stopPolling() {
+    if (lnPollTimer) { clearInterval(lnPollTimer); lnPollTimer = null; }
+    if (ethPollTimer) { clearInterval(ethPollTimer); ethPollTimer = null; }
+  }
+
   function resetBtns() {
+    stopPolling();
     const lb = document.getElementById('lnBtn');
     const eb = document.getElementById('ethBtn');
-    lb.textContent = '⚡ Send Sats via Lightning';
+    lb.textContent = '⚡ Generate Lightning Invoice';
     eb.textContent = '⟠ Connect Wallet & Pay';
     lb.disabled = false; eb.disabled = false;
+    lb.style.display = ''; eb.style.display = '';
+    currentInvoice = ''; ethTxHash = '';
+    document.getElementById('lnInvoiceArea').innerHTML = '';
+    document.getElementById('ethStatusArea').innerHTML = '';
   }
 
-  function copyInvoice() {
-    const text = document.getElementById('lnInvoiceText').textContent;
-    navigator.clipboard.writeText(text).then(() => alert('Invoice copied!'));
+  /* ---------- REAL LIGHTNING (LNURL-pay, LUD-16 + LUD-21) ---------- */
+
+  async function fetchLnurlPay(address) {
+    const [name, domain] = address.split('@');
+    if (!name || !domain) throw new Error('Invalid Lightning Address');
+    const res = await fetch(`https://${domain}/.well-known/lnurlp/${name}`);
+    if (!res.ok) throw new Error('Could not reach Lightning provider (' + res.status + ')');
+    const data = await res.json();
+    if (data.tag !== 'payRequest') throw new Error('Address does not support payments');
+    return data;
   }
 
-  // --- REAL PAYMENT FLOW ---
-
-  let currentInvoice = null; // store invoice data for polling
-
-  async function simulatePay(type) {
-    if (type === 'eth') {
-      payWithEth();
-      return;
+  async function requestInvoice(lnurlData, sats) {
+    const msat = sats * 1000;
+    if (msat < lnurlData.minSendable || msat > lnurlData.maxSendable) {
+      throw new Error('Amount must be ' + (lnurlData.minSendable/1000).toLocaleString() +
+        '–' + (lnurlData.maxSendable/1000).toLocaleString() + ' sats');
     }
-    await payWithLightning();
+    const cb = new URL(lnurlData.callback);
+    cb.searchParams.set('amount', msat);
+    const res = await fetch(cb.toString());
+    if (!res.ok) throw new Error('Invoice request failed (' + res.status + ')');
+    const inv = await res.json();
+    if (inv.status === 'ERROR') throw new Error(inv.reason || 'Provider rejected the request');
+    if (!inv.pr) throw new Error('No invoice returned');
+    return inv; // { pr, verify?, routes }
   }
 
   async function payWithLightning() {
     const btn = document.getElementById('lnBtn');
-    btn.textContent = '⚡ Generating Invoice...';
+    const area = document.getElementById('lnInvoiceArea');
+    stopPolling();
+    area.innerHTML = '';
     btn.disabled = true;
-
-    const product = document.getElementById('mName').textContent;
-    const satsText = document.getElementById('mSats').textContent; // e.g. "25,000 sats"
-    const amount = parseInt(satsText.replace(/,/g, '').replace(' sats', ''));
-
+    btn.textContent = '⚡ Requesting invoice…';
     try {
-      // 1. Create real invoice
-      const res = await fetch('/.netlify/functions/create-invoice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, product, buyerPubkey: '' })
-      });
-
-      const data = await res.json();
-
-      if (!data.invoice) throw new Error(data.error || 'Failed to create invoice');
-
-      currentInvoice = data;
-
-      // 2. Show QR / invoice to user
-      btn.textContent = '⚡ Waiting for payment...';
-      document.getElementById('lnInvoiceBox').style.display = 'block';
-      document.getElementById('lnInvoiceText').textContent = data.invoice;
-
-      // 3. Poll for payment
-      pollPayment(data.paymentHash, product, amount);
-
-    } catch (err) {
-      btn.textContent = '⚡ Send Sats via Lightning';
+      const lnurlData = await fetchLnurlPay(LN);
+      const inv = await requestInvoice(lnurlData, currentSats);
+      currentInvoice = inv.pr;
+      renderInvoice(inv.pr);
+      btn.style.display = 'none';
+      if (inv.verify) {
+        startVerifyPolling(inv.verify);
+      } else {
+        const s = document.getElementById('lnStatus');
+        if (s) s.innerHTML = '⏳ Invoice ready — confirm in your wallet (auto-detect unavailable for this provider)';
+      }
+    } catch (e) {
+      area.innerHTML = '<div class="ln-error">⚠ ' + e.message + '</div>';
       btn.disabled = false;
-      alert('Error: ' + err.message);
+      btn.style.display = '';
+      btn.textContent = '⚡ Try again';
     }
   }
 
-  async function pollPayment(paymentHash, product, amount) {
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch('/.netlify/functions/check-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ paymentHash })
-        });
-        const data = await res.json();
-
-        if (data.paid) {
-          clearInterval(interval);
-
-          // Send Nostr DM confirmation
-          await fetch('/.netlify/functions/send-dm', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ buyerPubkey: '', product, amount, paymentHash })
-          });
-
-          // Show success
-          document.getElementById('payBody').style.display = 'none';
-          document.getElementById('lnInvoiceBox').style.display = 'none';
-          const sIcon = document.getElementById('sIcon');
-          sIcon.className = 's-icon s-btc';
-          sIcon.textContent = '✓';
-          document.getElementById('txBox').textContent = 'Payment Hash: ' + paymentHash;
-          document.getElementById('successDiv').classList.add('on');
-        }
-      } catch (e) {
-        console.error('Poll error:', e);
-      }
-    }, 3000); // check every 3 seconds
+  function renderInvoice(pr) {
+    const area = document.getElementById('lnInvoiceArea');
+    area.innerHTML =
+      '<div class="qr-wrap"><div id="qrcode"></div></div>' +
+      '<div class="inv-string" id="invStr" onclick="copyInvoice()" title="Click to copy">' + pr + '</div>' +
+      '<div class="inv-actions">' +
+        '<button class="inv-btn" onclick="copyInvoice()">📋 Copy invoice</button>' +
+        '<a class="inv-btn" href="lightning:' + pr + '">⚡ Open in wallet</a>' +
+      '</div>' +
+      '<div class="ln-status" id="lnStatus"><span class="ln-spinner"></span> Waiting for payment…</div>';
+    new QRCode(document.getElementById('qrcode'), {
+      text: pr.toUpperCase(),
+      width: 264, height: 264,
+      correctLevel: QRCode.CorrectLevel.L
+    });
   }
 
-  function payWithEth() {
-    const btn = document.getElementById('ethBtn');
-    btn.textContent = '⟠ Connecting wallet...';
-    btn.disabled = true;
+  function copyInvoice() {
+    if (!currentInvoice) return;
+    navigator.clipboard.writeText(currentInvoice).then(() => {
+      const s = document.getElementById('lnStatus');
+      if (s && !s.classList.contains('paid')) {
+        const prev = s.innerHTML;
+        s.innerHTML = '✓ Invoice copied';
+        setTimeout(() => { if (!s.classList.contains('paid')) s.innerHTML = prev; }, 1500);
+      }
+    });
+  }
 
-    // Check for MetaMask / window.ethereum
-    if (typeof window.ethereum === 'undefined') {
-      btn.textContent = '⟠ Connect Wallet & Pay';
-      btn.disabled = false;
-      alert('No ETH wallet found. Please install MetaMask or use a Web3 browser.');
+  function startVerifyPolling(verifyUrl) {
+    let tries = 0;
+    lnPollTimer = setInterval(async () => {
+      tries++;
+      try {
+        const res = await fetch(verifyUrl);
+        const d = await res.json();
+        if (d.settled === true) {
+          stopPolling();
+          onLightningPaid();
+          return;
+        }
+      } catch (e) { /* keep polling */ }
+      if (tries > 150) { // ~5 minutes
+        stopPolling();
+        const s = document.getElementById('lnStatus');
+        if (s) s.innerHTML = '⌛ Invoice expired — generate a new one';
+      }
+    }, 2000);
+  }
+
+  function onLightningPaid() {
+    document.getElementById('payBody').style.display = 'none';
+    const sIcon = document.getElementById('sIcon');
+    sIcon.className = 's-icon s-btc';
+    sIcon.textContent = '✓';
+    document.getElementById('txBox').textContent = 'Invoice: ' + currentInvoice;
+    document.getElementById('successDiv').classList.add('on');
+    deliverGoods(currentInvoice);
+  }
+
+  /* ---------- REAL ETHEREUM (injected wallet, on-chain tx) ---------- */
+
+  const CHAINS = {
+    '0x1':       { name: 'Ethereum',        explorer: 'https://etherscan.io' },
+    '0xaa36a7':  { name: 'Sepolia',         explorer: 'https://sepolia.etherscan.io' },
+    '0x89':      { name: 'Polygon',         explorer: 'https://polygonscan.com' },
+    '0x2105':    { name: 'Base',            explorer: 'https://basescan.org' },
+    '0xa':       { name: 'Optimism',        explorer: 'https://optimistic.etherscan.io' },
+    '0xa4b1':    { name: 'Arbitrum',        explorer: 'https://arbiscan.io' }
+  };
+
+  // EIP-3085 params so a wallet can ADD the network if it doesn't have it yet.
+  const CHAIN_PARAMS = {
+    '0x1': {
+      chainId: '0x1', chainName: 'Ethereum Mainnet',
+      nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+      rpcUrls: ['https://eth.llamarpc.com', 'https://cloudflare-eth.com'],
+      blockExplorerUrls: ['https://etherscan.io']
+    },
+    '0x2105': {
+      chainId: '0x2105', chainName: 'Base',
+      nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+      rpcUrls: ['https://mainnet.base.org'],
+      blockExplorerUrls: ['https://basescan.org']
+    },
+    '0xaa36a7': {
+      chainId: '0xaa36a7', chainName: 'Sepolia',
+      nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
+      rpcUrls: ['https://ethereum-sepolia-rpc.publicnode.com', 'https://rpc.sepolia.org'],
+      blockExplorerUrls: ['https://sepolia.etherscan.io']
+    }
+  };
+
+  function ethToWeiHex(ethStr) {
+    const [whole, frac = ''] = String(ethStr).trim().split('.');
+    const fracPadded = (frac + '0'.repeat(18)).slice(0, 18);
+    const wei = BigInt(whole || '0') * (10n ** 18n) + BigInt(fracPadded || '0');
+    return '0x' + wei.toString(16);
+  }
+
+  function explorerTxUrl(chainId, txHash) {
+    const c = CHAINS[chainId];
+    return c ? c.explorer + '/tx/' + txHash : null;
+  }
+
+  // Guardrail: make sure the wallet is on the required network before sending.
+  async function ensureEthNetwork() {
+    let chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    if (chainId === REQUIRED_CHAIN) return chainId;
+
+    document.getElementById('ethStatusArea').innerHTML =
+      '<div class="ln-status"><span class="ln-spinner"></span> Switching your wallet to ' + REQUIRED_NAME + '…</div>';
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: REQUIRED_CHAIN }]
+      });
+    } catch (err) {
+      if (err && err.code === 4902) {
+        // Network not in the wallet yet — add it, which also switches to it.
+        const params = CHAIN_PARAMS[REQUIRED_CHAIN];
+        if (!params) throw new Error(REQUIRED_NAME + ' is not available in your wallet.');
+        document.getElementById('ethStatusArea').innerHTML =
+          '<div class="ln-status"><span class="ln-spinner"></span> Adding ' + REQUIRED_NAME + ' to your wallet…</div>';
+        try {
+          await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [params] });
+        } catch (addErr) {
+          if (addErr && addErr.code === 4001) {
+            throw new Error('You declined to add ' + REQUIRED_NAME + '. Add it to pay with ETH.');
+          }
+          throw new Error(addErr && addErr.message ? addErr.message : 'Could not add ' + REQUIRED_NAME + '.');
+        }
+      } else if (err && err.code === 4001) {
+        throw new Error('This store accepts ETH on ' + REQUIRED_NAME + '. Please switch networks to pay.');
+      } else {
+        throw new Error(err && err.message ? err.message : 'Could not switch network.');
+      }
+    }
+
+    chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    if (chainId !== REQUIRED_CHAIN) {
+      throw new Error('Please switch your wallet to ' + REQUIRED_NAME + ' and try again.');
+    }
+    return chainId;
+  }
+
+  async function payWithEth() {
+    const btn = document.getElementById('ethBtn');
+    const area = document.getElementById('ethStatusArea');
+    stopPolling();
+    area.innerHTML = '';
+
+    if (!window.ethereum) {
+      area.innerHTML = '<div class="ln-error">⚠ No Ethereum wallet detected. Install MetaMask (or open this page in your wallet\'s browser) to pay with ETH.</div>';
       return;
     }
 
-    const ethAmount = document.getElementById('mEth').textContent.replace(' ETH','');
-    const product = document.getElementById('mName').textContent;
-    const ETH_ADDRESS = '0x1E7c6338431d1C6326053F9355eb1812A8b673BF';
+    btn.disabled = true;
+    btn.textContent = '⟠ Connecting wallet…';
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const from = accounts[0];
+      btn.textContent = '⟠ Checking network…';
+      const chainId = await ensureEthNetwork();
+      const netName = (CHAINS[chainId] && CHAINS[chainId].name) || ('chain ' + chainId);
+      const valueHex = ethToWeiHex(currentEth);
 
-    window.ethereum.request({ method: 'eth_requestAccounts' })
-      .then(accounts => {
-        const from = accounts[0];
-        const value = '0x' + Math.floor(parseFloat(ethAmount) * 1e18).toString(16);
+      btn.textContent = '⟠ Confirm in wallet…';
+      area.innerHTML = '<div class="ln-status"><span class="ln-spinner"></span> Confirm the ' +
+        currentEth + ' ETH payment in your wallet (' + netName + ')…</div>';
 
-        return window.ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{ from, to: ETH_ADDRESS, value }]
-        });
-      })
-      .then(txHash => {
-        document.getElementById('payBody').style.display = 'none';
-        const sIcon = document.getElementById('sIcon');
-        sIcon.className = 's-icon s-eth';
-        sIcon.textContent = '✓';
-        document.getElementById('txBox').textContent = 'TX: ' + txHash;
-        document.getElementById('successDiv').classList.add('on');
-      })
-      .catch(err => {
-        btn.textContent = '⟠ Connect Wallet & Pay';
-        btn.disabled = false;
-        alert('Wallet error: ' + err.message);
+      const txHash = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{ from: from, to: ETH_ADDR, value: valueHex }]
       });
+
+      ethTxHash = txHash;
+      btn.style.display = 'none';
+      showEthPending(txHash, chainId);
+      pollEthReceipt(txHash, chainId);
+    } catch (e) {
+      const msg = (e && e.code === 4001)
+        ? 'Payment rejected in wallet'
+        : (e && e.message ? e.message : 'Transaction failed');
+      area.innerHTML = '<div class="ln-error">⚠ ' + msg + '</div>';
+      btn.disabled = false;
+      btn.style.display = '';
+      btn.textContent = '⟠ Try again';
+    }
   }
+
+  function showEthPending(txHash, chainId) {
+    const area = document.getElementById('ethStatusArea');
+    const link = explorerTxUrl(chainId, txHash);
+    area.innerHTML =
+      (link ? '<a class="eth-inv-btn" href="' + link + '" target="_blank" rel="noopener">🔍 View transaction on explorer</a>' : '') +
+      '<div class="ln-status" id="ethStatus"><span class="ln-spinner"></span> Transaction sent — waiting for on-chain confirmation…</div>';
+  }
+
+  function pollEthReceipt(txHash, chainId) {
+    let tries = 0;
+    ethPollTimer = setInterval(async () => {
+      tries++;
+      try {
+        const r = await window.ethereum.request({
+          method: 'eth_getTransactionReceipt',
+          params: [txHash]
+        });
+        if (r && r.blockNumber) {
+          stopPolling();
+          onEthDone(txHash, chainId, r.status === '0x1');
+          return;
+        }
+      } catch (e) { /* keep polling */ }
+      if (tries > 120) { // ~6 minutes
+        stopPolling();
+        const s = document.getElementById('ethStatus');
+        if (s) s.innerHTML = '⌛ Still pending — check the explorer link for status';
+      }
+    }, 3000);
+  }
+
+  function onEthDone(txHash, chainId, ok) {
+    if (!ok) {
+      const area = document.getElementById('ethStatusArea');
+      const link = explorerTxUrl(chainId, txHash);
+      area.innerHTML =
+        (link ? '<a class="eth-inv-btn" href="' + link + '" target="_blank" rel="noopener">🔍 View transaction</a>' : '') +
+        '<div class="ln-error">⚠ Transaction failed on-chain</div>';
+      const btn = document.getElementById('ethBtn');
+      btn.disabled = false; btn.style.display = ''; btn.textContent = '⟠ Try again';
+      return;
+    }
+    document.getElementById('payBody').style.display = 'none';
+    const sIcon = document.getElementById('sIcon');
+    sIcon.className = 's-icon s-eth';
+    sIcon.textContent = '✓';
+    document.getElementById('txBox').textContent = 'TX: ' + txHash;
+    document.getElementById('successDiv').classList.add('on');
+    deliverGoods(txHash);
+  }
+
+  /* ---------- POST-PAYMENT DELIVERY ---------- */
+
+  function randCode(len) {
+    const a = crypto.getRandomValues(new Uint8Array(Math.ceil(len / 2)));
+    return Array.from(a).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, len).toUpperCase();
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  }
+  function oneYear() { return new Date(Date.now() + 365 * 864e5).toISOString().slice(0, 10); }
+
+  function saveOrder(item, orderId, payRef) {
+    try {
+      const log = JSON.parse(localStorage.getItem('np_orders') || '[]');
+      log.push({ item, orderId, payRef, at: new Date().toISOString() });
+      localStorage.setItem('np_orders', JSON.stringify(log));
+    } catch (e) { /* private mode — ignore */ }
+  }
+
+  function downloadDelivery() {
+    if (!window._deliveryFile) return;
+    const blob = new Blob([window._deliveryFile.fileText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = window._deliveryFile.fileName;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // Real Nostr keypair (npub / nsec) generated in-browser.
+  async function makeNostrKeys(orderId) {
+    const nt = await import('https://esm.sh/nostr-tools@2.7.2');
+    const sk = nt.generateSecretKey();
+    const pk = nt.getPublicKey(sk);
+    const npub = nt.nip19.npubEncode(pk);
+    const nsec = nt.nip19.nsecEncode(sk);
+    const skHex = Array.from(sk).map(b => b.toString(16).padStart(2, '0')).join('');
+    const fileText =
+'NOSTR KEY BUNDLE — ' + orderId + '\n' +
+'Issued: ' + new Date().toISOString() + '\n\n' +
+'PUBLIC KEY (share freely):\n  npub: ' + npub + '\n  hex:  ' + pk + '\n\n' +
+'PRIVATE KEY (KEEP SECRET — anyone with this fully controls this identity):\n  nsec: ' + nsec + '\n  hex:  ' + skHex + '\n\n' +
+'Import the nsec into any Nostr client (Damus, Amethyst, Primal, etc.).\n' +
+'Store it offline. It cannot be recovered if lost.';
+    const bodyHtml =
+      '<div class="deliver-box">' +
+        '<div class="deliver-label">🔑 Your new Nostr identity</div>' +
+        '<div class="kv"><span>Public key (npub)</span><code>' + esc(npub) + '</code></div>' +
+        '<div class="kv"><span>Secret key (nsec)</span><code class="secret">' + esc(nsec) + '</code></div>' +
+        '<div class="deliver-warn">⚠ The nsec is your secret key. Download &amp; save it now — it is generated locally and never stored or shown again.</div>' +
+      '</div>';
+    return { bodyHtml, fileName: 'nostr-key-bundle-' + orderId + '.txt', fileText };
+  }
+
+  function makeCertificate(orderId, opts) {
+    // opts: { label, icon, keyLabel, keyValue, lines[], note, fileTitle }
+    const exp = oneYear();
+    let fileText = opts.fileTitle + ' — ' + orderId + '\n' +
+      'Issued: ' + new Date().toISOString().slice(0, 10) + '\n' +
+      'Valid until: ' + exp + '\n' +
+      opts.keyLabel + ': ' + opts.keyValue + '\n';
+    if (opts.lines && opts.lines.length) fileText += '\n' + opts.lines.join('\n') + '\n';
+    let body =
+      '<div class="deliver-box">' +
+        '<div class="deliver-label">' + opts.icon + ' ' + esc(opts.label) + '</div>' +
+        '<div class="kv"><span>' + esc(opts.keyLabel) + '</span><code class="secret">' + esc(opts.keyValue) + '</code></div>' +
+        '<div class="kv"><span>Order ID</span><code>' + esc(orderId) + '</code></div>' +
+        '<div class="kv"><span>Valid until</span><code>' + esc(exp) + '</code></div>';
+    if (opts.note) body += '<div class="deliver-note">' + opts.note + '</div>';
+    body += '</div>';
+    return { bodyHtml: body, fileName: opts.fileTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + orderId + '.txt', fileText };
+  }
+
+  const DELIVERY = {
+    'Nostr Key Bundle': (orderId) => makeNostrKeys(orderId),
+
+    'Relay Access Pass': async (orderId) => makeCertificate(orderId, {
+      label: 'Relay Access Pass', icon: '📡',
+      keyLabel: 'Pass code', keyValue: 'RLY-' + randCode(12),
+      lines: ['Connect any Nostr client to these relays:',
+              '  wss://relay.damus.io', '  wss://nos.lol', '  wss://relay.nostr.band'],
+      note: 'Add these relay URLs in your Nostr client. (Point this at your own relay later by editing the delivery config.)',
+      fileTitle: 'Relay Access Pass'
+    }),
+
+    'AI Nostr Bot License': async (orderId) => makeCertificate(orderId, {
+      label: 'AI Nostr Bot License', icon: '🤖',
+      keyLabel: 'License key', keyValue: 'AIBOT-' + randCode(4) + '-' + randCode(4) + '-' + randCode(4),
+      lines: ['Tier: Standard', 'Seats: 1 bot instance'],
+      note: 'Use this license key to activate one AI bot instance. Keep it private.',
+      fileTitle: 'AI Nostr Bot License'
+    }),
+
+    'Infra Map Pro': async (orderId) => makeCertificate(orderId, {
+      label: 'Infra Map Pro Access', icon: '🗺️',
+      keyLabel: 'Access key', keyValue: 'MAP-' + randCode(10),
+      note: 'Use this key to unlock the interactive infrastructure map.',
+      fileTitle: 'Infra Map Pro'
+    }),
+
+    'NIP-05 Verified ID': async (orderId) => makeCertificate(orderId, {
+      label: 'NIP-05 Verified ID', icon: '✅',
+      keyLabel: 'Claim code', keyValue: 'NIP05-' + randCode(8),
+      note: 'Reply to your payment with your desired name@domain and this claim code to set up your NIP-05 verification.',
+      fileTitle: 'NIP-05 Verified ID'
+    }),
+
+    'Store Builder Kit': async (orderId) => makeCertificate(orderId, {
+      label: 'Store Builder Kit', icon: '🏪',
+      keyLabel: 'License key', keyValue: 'KIT-' + randCode(10),
+      lines: ['Template: NostrPay dual-payment storefront'],
+      note: 'Your license to deploy your own NostrPay storefront. Source: github.com/hasky00/ethPay-nostr-store',
+      fileTitle: 'Store Builder Kit'
+    })
+  };
+
+  async function deliverGoods(payRef) {
+    const area = document.getElementById('deliveryArea');
+    if (!area) return;
+    const orderId = 'NP-' + Date.now().toString(36).toUpperCase() + '-' + randCode(4);
+    saveOrder(currentName, orderId, payRef);
+
+    const gen = DELIVERY[currentName];
+    if (!gen) { area.innerHTML = ''; return; }
+
+    area.innerHTML = '<div class="ln-status"><span class="ln-spinner"></span> Preparing your ' + esc(currentName) + '…</div>';
+    try {
+      const out = await gen(orderId, payRef);
+      window._deliveryFile = { fileName: out.fileName, fileText: out.fileText };
+      area.innerHTML = out.bodyHtml +
+        '<button class="deliver-dl" onclick="downloadDelivery()">⬇ Download ' + esc(currentName) + '</button>';
+    } catch (e) {
+      area.innerHTML = '<div class="ln-error">⚠ Could not prepare delivery: ' + esc(e.message || e) +
+        '<br>Your payment went through — keep your order ID ' + esc(orderId) + ' and contact the store.</div>';
+    }
+  }
+
+  // Reflect the active network in the ETH panel label.
+  document.addEventListener('DOMContentLoaded', function () {
+    const n = document.getElementById('ethNetNote');
+    if (n) n.textContent = '⟠ Pay on ' + REQUIRED_NAME + ' · real on-chain tx';
+  });
 </script>
 </body>
 </html>
